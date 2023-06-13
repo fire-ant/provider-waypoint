@@ -1,0 +1,14 @@
+apiVersion: waypoint.waypoint.upbound.io/v1alpha1
+kind: Profile
+metadata: {}
+spec:
+  deletionPolicy: string
+  forProvider:
+    default: true
+    environmentVariables:
+    ociUrl: string
+    pluginConfig: string
+    pluginConfigFormat: number
+    pluginType: string
+    targetRunnerId: string
+    targetRunnerLabels:

@@ -1,0 +1,22 @@
+apiVersion: waypoint.waypoint.upbound.io/v1alpha1
+kind: MethodOidc
+metadata: {}
+spec:
+  deletionPolicy: string
+  forProvider:
+    accessorSelector: string
+    allowedRedirectUrls: ["string"]
+    auds: ["string"]
+    claimMappings:
+    clientId: string
+    clientSecretSecretRef:
+      key: string
+      name: string
+      namespace: string
+    description: string
+    discoveryCaPem: ["string"]
+    discoveryUrl: string
+    displayName: string
+    listClaimMappings:
+    scopes: ["string"]
+    signingAlgs: ["string"]
