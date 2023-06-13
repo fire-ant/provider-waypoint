@@ -173,11 +173,9 @@ else
 -include build/makelib/controlplane.mk
 endif
 
-TOKEN = $($(KUBECTL) -n waypoint-system get secret waypoint-runner-token -o json | jq -cr '.data | map_values(@base64d) | .token')
-
 uptest: $(UPTEST) $(KUBECTL) $(KUTTL) $(TOKEN)
 	@$(INFO) running automated tests
-	@TOKEN=$(TOKEN) KUBECTL=$(KUBECTL) KUTTL=$(KUTTL) $(UPTEST) e2e "${UPTEST_EXAMPLE_LIST}" --setup-script=cluster/test/setup.sh || $(FAIL)
+	@KUBECTL=$(KUBECTL) KUTTL=$(KUTTL) $(UPTEST) e2e "${UPTEST_EXAMPLE_LIST}" --setup-script=cluster/test/setup.sh || $(FAIL)
 	@$(OK) running automated tests
 
 local-deploy: build controlplane.up local.xpkg.deploy.provider.$(PROJECT_NAME)
