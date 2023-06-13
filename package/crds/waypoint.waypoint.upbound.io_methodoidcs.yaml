@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: resources.null.template.upbound.io
+  name: methodoidcs.waypoint.waypoint.upbound.io
 spec:
-  group: null.template.upbound.io
+  group: waypoint.waypoint.upbound.io
   names:
     categories:
     - crossplane
     - managed
-    - template
-    kind: Resource
-    listKind: ResourceList
-    plural: resources
-    singular: resource
+    - waypoint
+    kind: MethodOidc
+    listKind: MethodOidcList
+    plural: methodoidcs
+    singular: methodoidc
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Resource is the Schema for the Resources API. <no value>
+        description: MethodOidc is the Schema for the MethodOidcs API. <no value>
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: ResourceSpec defines the desired state of Resource
+            description: MethodOidcSpec defines the desired state of MethodOidc
             properties:
               deletionPolicy:
                 default: Delete
@@ -67,13 +67,78 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  triggers:
+                  accessorSelector:
+                    type: string
+                  allowedRedirectUrls:
+                    description: Allowed URI for auth redirection.
+                    items:
+                      type: string
+                    type: array
+                  auds:
+                    description: The optional audience claims required
+                    items:
+                      type: string
+                    type: array
+                  claimMappings:
                     additionalProperties:
                       type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
+                    description: Mapping of a claim to a variable value for the access
+                      selector
                     type: object
+                  clientId:
+                    description: Client ID of OIDC provider
+                    type: string
+                  clientSecretSecretRef:
+                    description: client secret for OIDC provider
+                    properties:
+                      key:
+                        description: The key to select.
+                        type: string
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                  description:
+                    description: Description of auth method
+                    type: string
+                  discoveryCaPem:
+                    description: Optional CA certificate chain to validate the discovery
+                      URL. Multiple CA certificates can be specified to support easier
+                      rotation
+                    items:
+                      type: string
+                    type: array
+                  discoveryUrl:
+                    description: Discovery URL for OIDC provider
+                    type: string
+                  displayName:
+                    description: Friendly display name of OIDC auth method
+                    type: string
+                  listClaimMappings:
+                    additionalProperties:
+                      type: string
+                    description: Same as claim-mapping but for list values
+                    type: object
+                  scopes:
+                    description: The optional claims scope requested.
+                    items:
+                      type: string
+                    type: array
+                  signingAlgs:
+                    description: The signing algorithms supported by the OIDC connect
+                      server. If this isn't specified, this will default to RS256
+                      since that should be supported according to the RFC. The string
+                      values here should be valid OIDC signing algorithms
+                    items:
+                      type: string
+                    type: array
                 type: object
               managementPolicy:
                 default: FullControl
@@ -261,20 +326,75 @@ spec:
             required:
             - forProvider
             type: object
+            x-kubernetes-validations:
+            - message: allowedRedirectUrls is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.allowedRedirectUrls)
+            - message: clientId is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.clientId)
+            - message: discoveryUrl is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.discoveryUrl)
           status:
-            description: ResourceStatus defines the observed state of Resource.
+            description: MethodOidcStatus defines the observed state of MethodOidc.
             properties:
               atProvider:
                 properties:
-                  id:
+                  accessorSelector:
                     type: string
-                  triggers:
+                  allowedRedirectUrls:
+                    description: Allowed URI for auth redirection.
+                    items:
+                      type: string
+                    type: array
+                  auds:
+                    description: The optional audience claims required
+                    items:
+                      type: string
+                    type: array
+                  claimMappings:
                     additionalProperties:
                       type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
+                    description: Mapping of a claim to a variable value for the access
+                      selector
                     type: object
+                  clientId:
+                    description: Client ID of OIDC provider
+                    type: string
+                  description:
+                    description: Description of auth method
+                    type: string
+                  discoveryCaPem:
+                    description: Optional CA certificate chain to validate the discovery
+                      URL. Multiple CA certificates can be specified to support easier
+                      rotation
+                    items:
+                      type: string
+                    type: array
+                  discoveryUrl:
+                    description: Discovery URL for OIDC provider
+                    type: string
+                  displayName:
+                    description: Friendly display name of OIDC auth method
+                    type: string
+                  id:
+                    type: string
+                  listClaimMappings:
+                    additionalProperties:
+                      type: string
+                    description: Same as claim-mapping but for list values
+                    type: object
+                  scopes:
+                    description: The optional claims scope requested.
+                    items:
+                      type: string
+                    type: array
+                  signingAlgs:
+                    description: The signing algorithms supported by the OIDC connect
+                      server. If this isn't specified, this will default to RS256
+                      since that should be supported according to the RFC. The string
+                      values here should be valid OIDC signing algorithms
+                    items:
+                      type: string
+                    type: array
                 type: object
               conditions:
                 description: Conditions of the resource.

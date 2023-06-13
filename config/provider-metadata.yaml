@@ -1,9 +1,67 @@
-name: hashicorp/null
+name: hashicorp-dev-advocates/waypoint
 resources:
-    null_resource Resource - terraform-provider-null:
+    waypoint_auth_method_oidc Resource - terraform-provider-waypoint:
         subCategory: ""
-        description: The null_resource resource implements the standard resource lifecycle but takes no further action. The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
-        name: null_resource Resource - terraform-provider-null
-        title: null_resource Resource - terraform-provider-null
-        argumentDocs: {}
+        description: Auth method OIDC resource manages OIDC auth methods in Waypoint.
+        name: waypoint_auth_method_oidc Resource - terraform-provider-waypoint
+        title: waypoint_auth_method_oidc Resource - terraform-provider-waypoint
+        argumentDocs:
+            accessor_selector: (String)
+            allowed_redirect_urls: (List of String) Allowed URI for auth redirection.
+            auds: (List of String) The optional audience claims required
+            claim_mappings: (Map of String) Mapping of a claim to a variable value for the access selector
+            client_id: (String) Client ID of OIDC provider
+            client_secret: (String, Sensitive) client secret for OIDC provider
+            description: (String) Description of auth method
+            discovery_ca_pem: (List of String) Optional CA certificate chain to validate the discovery URL. Multiple CA certificates can be specified to support easier rotation
+            discovery_url: (String) Discovery URL for OIDC provider
+            display_name: (String) Friendly display name of OIDC auth method
+            id: (String) The ID of this resource.
+            list_claim_mappings: (Map of String) Same as claim-mapping but for list values
+            name: (String) name of OIDC auth method
+            scopes: (List of String) The optional claims scope requested.
+            signing_algs: (List of String) The signing algorithms supported by the OIDC connect server. If this isn't specified, this will default to RS256 since that should be supported according to the RFC. The string values here should be valid OIDC signing algorithms
+        importStatements: []
+    waypoint_project Resource - terraform-provider-waypoint:
+        subCategory: ""
+        description: Project resource in the Waypoint Terraform provider.
+        name: waypoint_project Resource - terraform-provider-waypoint
+        title: waypoint_project Resource - terraform-provider-waypoint
+        argumentDocs:
+            app_status_poll_seconds: (Number) Application status poll interval in seconds
+            data_source_git: '(Block List, Min: 1, Max: 1) Configuration of Git repository where waypoint.hcl file is stored (see below for nested schema)'
+            file_change_signal: (String) Indicates signal to be sent to any applications when their config files change.
+            git_auth_basic: '(Block List, Max: 1) Basic authentication details for Git consisting of username and password (see below for nested schema)'
+            git_auth_ssh: '(Block List, Max: 1) SSH authentication details for Git (see below for nested schema)'
+            git_path: (String) Path in git repository when waypoint.hcl file is stored in a sub-directory
+            git_poll_interval_seconds: (Number) Interval at which Waypoint should poll git repository for changes
+            git_ref: (String) Git repository ref containing waypoint.hcl file
+            git_url: (String) Url of git repository storing the waypoint.hcl file
+            git_user: (String) Git user associated with private key
+            id: (String) The ID of this resource.
+            ignore_changes_outside_path: (Boolean) Whether Waypoint ignores changes outside path storing waypoint.hcl file
+            passphrase: (String, Sensitive) Passphrase to use with private key
+            password: (String, Sensitive) Git password
+            project_name: (String) The name of the Waypoint project
+            project_variables: (Map of String) List of variables in Key/value pairs associated with the Waypoint Project
+            remote_runners_enabled: (Boolean) Enable remote runners for project
+            ssh_private_key: (String, Sensitive) Private key to authenticate to Git
+            username: (String) Git username
+        importStatements: []
+    waypoint_runner_profile Resource - terraform-provider-waypoint:
+        subCategory: ""
+        description: Runner profile resource to configure Waypoint runners.
+        name: waypoint_runner_profile Resource - terraform-provider-waypoint
+        title: waypoint_runner_profile Resource - terraform-provider-waypoint
+        argumentDocs:
+            default: (Boolean) Indicates if this runner profile is the default for any new projects
+            environment_variables: (Map of String) Any env vars that should be exposed to the on demand runner.
+            id: (String) Computed ID of runner profile.
+            oci_url: (String) oci_url is the OCI image that will be used to boot the on demand runner.
+            plugin_config: (String) plugin config is the configuration for the plugin that is created. It is usually HCL and is decoded like the other plugins, and is plugin specific.
+            plugin_config_format: (Number) config format specifies the format of plugin_config.
+            plugin_type: (String) Plugin type for runner i.e docker / kubernetes / aws-ecs.
+            profile_name: (String) The name of the runner profile
+            target_runner_id: (String) The ID of the target runner for this profile.
+            target_runner_labels: (Map of String) A map of labels on target runners
         importStatements: []

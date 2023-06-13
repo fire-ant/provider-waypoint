@@ -1,17 +1,17 @@
 # ====================================================================================
 # Setup Project
 
-PROJECT_NAME ?= upjet-provider-template
-PROJECT_REPO ?= github.com/upbound/$(PROJECT_NAME)
+PROJECT_NAME ?= provider-waypoint
+PROJECT_REPO ?= github.com/fire-ant/$(PROJECT_NAME)
 
 export TERRAFORM_VERSION ?= 1.3.3
 
-export TERRAFORM_PROVIDER_SOURCE ?= hashicorp/null
-export TERRAFORM_PROVIDER_REPO ?= https://github.com/hashicorp/terraform-provider-null
-export TERRAFORM_PROVIDER_VERSION ?= 3.1.0
-export TERRAFORM_PROVIDER_DOWNLOAD_NAME ?= terraform-provider-null
-export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= https://releases.hashicorp.com/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)/$(TERRAFORM_PROVIDER_VERSION)
-export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-null_v3.1.0_x5
+export TERRAFORM_PROVIDER_SOURCE ?= hashicorp-dev-advocates/waypoint
+export TERRAFORM_PROVIDER_REPO ?= https://github.com/hashicorp-dev-advocates/terraform-provider-waypoint
+export TERRAFORM_PROVIDER_VERSION ?= 0.3.0
+export TERRAFORM_PROVIDER_DOWNLOAD_NAME ?= terraform-provider-waypoint
+export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= $(TERRAFORM_PROVIDER_REPO)/releases/download/v$(TERRAFORM_PROVIDER_VERSION)
+export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-waypoint_v0.3.0
 export TERRAFORM_DOCS_PATH ?= docs/resources
 
 
@@ -52,9 +52,12 @@ GO_SUBDIRS += cmd internal apis
 
 KIND_VERSION = v0.15.0
 UP_VERSION = v0.14.0
+USE_HELM3 = true
+HELM3_VERSION = v3.9.1
 UP_CHANNEL = stable
 UPTEST_VERSION = v0.2.1
 -include build/makelib/k8s_tools.mk
+
 
 # ====================================================================================
 # Setup Images
@@ -89,7 +92,7 @@ fallthrough: submodules
 
 # NOTE(hasheddan): we force image building to happen prior to xpkg build so that
 # we ensure image is present in daemon.
-xpkg.build.upjet-provider-template: do.build.images
+xpkg.build.provider-waypoint: do.build.images
 
 # NOTE(hasheddan): we ensure up is installed prior to running platform-specific
 # build steps in parallel to avoid encountering an installation race condition.
@@ -177,7 +180,27 @@ local-deploy: build controlplane.up local.xpkg.deploy.provider.$(PROJECT_NAME)
 	@$(KUBECTL) -n upbound-system wait --for=condition=Available deployment --all --timeout=5m
 	@$(OK) running locally built provider
 
-e2e: local-deploy uptest
+tools: $(HELM) $(UPTEST) $(KUBECTL) $(KUTTL) $(TERRAFORM) $(KIND)
+
+waypoint:
+	@$(HELM) repo add hashicorp https://helm.releases.hashicorp.com --force-update
+	@$(HELM) upgrade --install \
+  --namespace waypoint-system \
+  --create-namespace \
+  --set ui.service.type=ClusterIP \
+  waypoint hashicorp/waypoint
+	@until kubectl -n waypoint-system get pod waypoint-server-0 >/dev/null 2>&1; do echo "waiting for server to initialize" && sleep 3; done
+	@$(KUBECTL) -n waypoint-system wait po waypoint-server-0 --for condition=Ready --timeout=300s
+	@$(INFO) the waypoint runner login token is:
+	@$(KUBECTL) -n waypoint-system get secret waypoint-runner-token -o json | jq -cr '.data | map_values(@base64d) | .token'
+	@$(INFO) the waypoint server login token is:
+	@$(KUBECTL) -n waypoint-system get secret waypoint-server-token -o json | jq -cr '.data | map_values(@base64d) | .token'
+	@$(OK) running locally deployed waypoint
+	@$(INFO) Please use "kubectl port-forward svc/waypoint-ui 9443:443 -n waypoint-system" in conjunction with a token to login to the system via the ui
+
+#   --set runner.server.tokenSecret=ui-secret \
+# @$(KUBECTL) apply -f patch/ui-secret.yaml - could try and statically patch the secret but might not be useful or stable
+e2e: local-deploy waypoint uptest
 
 .PHONY: cobertura submodules fallthrough run crds.clean
 
