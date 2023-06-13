@@ -27,6 +27,13 @@ const (
 	errUnmarshalCredentials = "cannot unmarshal waypoint credentials as JSON"
 )
 
+const (
+	// ServerURL endpoint
+	waypointaddr = "waypoint_addr"
+	// Token for endpoint
+	token = "token"
+)
+
 // TerraformSetupBuilder builds Terraform a terraform.SetupFn function which
 // returns Terraform provider setup configuration
 func TerraformSetupBuilder(version, providerSource, providerVersion string) terraform.SetupFn {
@@ -62,11 +69,13 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 			return ps, errors.Wrap(err, errUnmarshalCredentials)
 		}
 
-		// Set credentials in Terraform provider configuration.
-		/*ps.Configuration = map[string]any{
-			"username": creds["username"],
-			"password": creds["password"],
-		}*/
+		ps.Configuration = map[string]any{}
+		if v, ok := creds[waypointaddr]; ok {
+			ps.Configuration[waypointaddr] = v
+		}
+		if v, ok := creds[token]; ok {
+			ps.Configuration[token] = v
+		}
 		return ps, nil
 	}
 }
