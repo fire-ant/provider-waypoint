@@ -173,9 +173,11 @@ else
 -include build/makelib/controlplane.mk
 endif
 
-uptest: $(UPTEST) $(KUBECTL) $(KUTTL)
+TOKEN = $($(KUBECTL) -n waypoint-system get secret waypoint-runner-token -o json | jq -cr '.data | map_values(@base64d) | .token')
+
+uptest: $(UPTEST) $(KUBECTL) $(KUTTL) $(TOKEN)
 	@$(INFO) running automated tests
-	@KUBECTL=$(KUBECTL) KUTTL=$(KUTTL) $(UPTEST) e2e "${UPTEST_EXAMPLE_LIST}" --setup-script=cluster/test/setup.sh || $(FAIL)
+	@TOKEN=$(TOKEN) KUBECTL=$(KUBECTL) KUTTL=$(KUTTL) $(UPTEST) e2e "${UPTEST_EXAMPLE_LIST}" --setup-script=cluster/test/setup.sh || $(FAIL)
 	@$(OK) running automated tests
 
 local-deploy: build controlplane.up local.xpkg.deploy.provider.$(PROJECT_NAME)
@@ -187,12 +189,10 @@ local-deploy: build controlplane.up local.xpkg.deploy.provider.$(PROJECT_NAME)
 tools: $(HELM) $(UPTEST) $(KUBECTL) $(KUTTL) $(TERRAFORM) $(KIND)
 
 waypoint:
-	@$(KUBECTL) apply -f patch/ui-secret.yaml
 	@$(HELM) repo add hashicorp https://helm.releases.hashicorp.com --force-update
 	@$(HELM) upgrade --install \
   --namespace waypoint-system \
   --create-namespace \
-  --set runner.server.tokenSecret=waypoint-server-token \
   --set ui.service.type=ClusterIP  \
   waypoint hashicorp/waypoint
 	@until kubectl -n waypoint-system get pod waypoint-server-0 >/dev/null 2>&1; do echo "waiting for server to initialize" && sleep 3; done

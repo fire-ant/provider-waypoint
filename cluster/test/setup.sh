@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -aeuo pipefail
 
+echo "exported server-token=${TOKEN}"
 echo "Running setup.sh"
 echo "Creating a default credentials..."
 cat <<EOF | ${KUBECTL} apply -f -
@@ -15,7 +16,7 @@ stringData:
     {
       "
       "waypoint_addr: "waypoint.waypoint-system.svc.cluster.local",
-      "token": "BCkP8cw7qjsKhhkXeF3SsV8FY9NPzGCx5bJgocMuiKhn1wpHmxj4AsR5pXC1GF6pbYujjCgZxziae8BBwnvrkBsD7GK8DKMfyKsXkKQ1jmBCqfEwLo8WAvuv6Vp55bEqCis6QgTkXECFbVPjN"
+      "token": \"${TOKEN}\"
     }
 EOF
 
