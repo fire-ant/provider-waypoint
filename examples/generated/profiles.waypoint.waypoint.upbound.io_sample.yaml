@@ -1,0 +1,56 @@
+apiVersion: waypoint.waypoint.upbound.io/v1alpha1
+kind: Profile
+metadata: {}
+spec:
+  deletionPolicy: string
+  forProvider:
+    default: true
+    environmentVariables:
+    ociUrl: string
+    pluginConfig: string
+    pluginConfigFormat: number
+    pluginType: string
+    targetRunnerId: string
+    targetRunnerLabels:
+  managementPolicy: string
+  providerConfigRef:
+    name: string
+    policy:
+      resolution: string
+      resolve: string
+  providerRef:
+    name: string
+    policy:
+      resolution: string
+      resolve: string
+  publishConnectionDetailsTo:
+    configRef:
+      name: string
+      policy:
+        resolution: string
+        resolve: string
+    metadata:
+      annotations:
+      labels:
+      type: string
+    name: string
+  writeConnectionSecretToRef:
+    name: string
+    namespace: string
+status:
+  atProvider:
+    default: true
+    environmentVariables:
+    id: string
+    ociUrl: string
+    pluginConfig: string
+    pluginConfigFormat: number
+    pluginType: string
+    targetRunnerId: string
+    targetRunnerLabels:
+  conditions:
+  - lastTransitionTime: string
+    message: string
+    reason: string
+    status: string
+    type: string
