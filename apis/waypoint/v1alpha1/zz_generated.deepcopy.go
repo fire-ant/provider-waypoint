@@ -885,11 +885,6 @@ func (in *ProjectObservation) DeepCopyInto(out *ProjectObservation) {
 		*out = new(string)
 		**out = **in
 	}
-	if in.ProjectName != nil {
-		in, out := &in.ProjectName, &out.ProjectName
-		*out = new(string)
-		**out = **in
-	}
 	if in.ProjectVariables != nil {
 		in, out := &in.ProjectVariables, &out.ProjectVariables
 		*out = make(map[string]*string, len(*in))
@@ -950,11 +945,6 @@ func (in *ProjectParameters) DeepCopyInto(out *ProjectParameters) {
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
-	}
-	if in.ProjectName != nil {
-		in, out := &in.ProjectName, &out.ProjectName
-		*out = new(string)
-		**out = **in
 	}
 	if in.ProjectVariables != nil {
 		in, out := &in.ProjectVariables, &out.ProjectVariables

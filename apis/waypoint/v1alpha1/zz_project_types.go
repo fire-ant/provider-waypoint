@@ -115,9 +115,6 @@ type ProjectObservation struct {
 
 	ID *string `json:"id,omitempty" tf:"id,omitempty"`
 
-	// The name of the Waypoint project
-	ProjectName *string `json:"projectName,omitempty" tf:"project_name,omitempty"`
-
 	// List of variables in Key/value pairs associated with the Waypoint Project
 	ProjectVariables map[string]*string `json:"projectVariables,omitempty" tf:"project_variables,omitempty"`
 
@@ -142,10 +139,6 @@ type ProjectParameters struct {
 	// SSH authentication details for Git
 	// +kubebuilder:validation:Optional
 	GitAuthSSH []GitAuthSSHParameters `json:"gitAuthSsh,omitempty" tf:"git_auth_ssh,omitempty"`
-
-	// The name of the Waypoint project
-	// +kubebuilder:validation:Optional
-	ProjectName *string `json:"projectName,omitempty" tf:"project_name,omitempty"`
 
 	// List of variables in Key/value pairs associated with the Waypoint Project
 	// +kubebuilder:validation:Optional
@@ -181,7 +174,6 @@ type Project struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 	// +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'ObserveOnly' || has(self.forProvider.dataSourceGit)",message="dataSourceGit is a required parameter"
-	// +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'ObserveOnly' || has(self.forProvider.projectName)",message="projectName is a required parameter"
 	Spec   ProjectSpec   `json:"spec"`
 	Status ProjectStatus `json:"status,omitempty"`
 }

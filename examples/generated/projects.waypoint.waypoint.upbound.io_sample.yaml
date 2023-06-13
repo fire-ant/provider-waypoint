@@ -28,7 +28,6 @@ spec:
         key: string
         name: string
         namespace: string
-    projectName: string
     projectVariables:
     remoteRunnersEnabled: true
   managementPolicy: string
@@ -71,7 +70,6 @@ status:
     gitAuthSsh:
     - gitUser: string
     id: string
-    projectName: string
     projectVariables:
     remoteRunnersEnabled: true
   conditions:

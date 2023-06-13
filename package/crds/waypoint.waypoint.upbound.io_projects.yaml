@@ -176,9 +176,6 @@ spec:
                       - sshPrivateKeySecretRef
                       type: object
                     type: array
-                  projectName:
-                    description: The name of the Waypoint project
-                    type: string
                   projectVariables:
                     additionalProperties:
                       type: string
@@ -378,8 +375,6 @@ spec:
             x-kubernetes-validations:
             - message: dataSourceGit is a required parameter
               rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.dataSourceGit)
-            - message: projectName is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.projectName)
           status:
             description: ProjectStatus defines the observed state of Project.
             properties:
@@ -439,9 +434,6 @@ spec:
                       type: object
                     type: array
                   id:
-                    type: string
-                  projectName:
-                    description: The name of the Waypoint project
                     type: string
                   projectVariables:
                     additionalProperties:
