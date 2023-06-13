@@ -25,8 +25,7 @@
 		},
 			"ghcr.io/devcontainers-contrib/features/gh-cli:1": {},
 			"ghcr.io/devcontainers-contrib/features/bash-command:1": {
-				// curl -sL https://cli.upbound.io | sh && sudo mv up /usr/local/bin/ && 
-			"command": "wget https://github.com/Skarlso/crd-to-sample-yaml/releases/download/v0.0.15/cty_linux_amd64.tar.gz && tar -xvf cty_linux_amd64.tar.gz && mv cty /usr/local/bin  && rm -rf cty_linux_amd64.tar.gz"
+			"command": "wget https://github.com/Skarlso/crd-to-sample-yaml/releases/download/v0.0.15/cty_linux_amd64.tar.gz && tar -xvf cty_linux_amd64.tar.gz && mv cty /usr/local/bin && rm -rf cty_linux_amd64.tar.gz && wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && echo 'deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main' | sudo tee /etc/apt/sources.list.d/hashicorp.list && sudo apt update && sudo apt install waypoint"
 		}
 	},
 	"runArgs": [
@@ -34,12 +33,11 @@
 	],
 	"initializeCommand": "docker network create kind-sandbox || true",
 	"postCreateCommand": "go install golang.org/x/tools/cmd/goimports@latest",
-	// "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
 	"remoteEnv": {
 		"KIND_EXPERIMENTAL_DOCKER_NETWORK": "kind-sandbox",
 		"TILT_DISABLE_ANALYTICS": "true",
 		"DO_NOT_TRACK": "1",
-    "USE_DEVCON": "true"
+    	"USE_DEVCON": "true"
 	},
 	"remoteUser": "root",
 	"customizations": {
