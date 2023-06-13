@@ -187,11 +187,13 @@ local-deploy: build controlplane.up local.xpkg.deploy.provider.$(PROJECT_NAME)
 tools: $(HELM) $(UPTEST) $(KUBECTL) $(KUTTL) $(TERRAFORM) $(KIND)
 
 waypoint:
+	@$(KUBECTL) apply -f patch/ui-secret.yaml
 	@$(HELM) repo add hashicorp https://helm.releases.hashicorp.com --force-update
 	@$(HELM) upgrade --install \
   --namespace waypoint-system \
   --create-namespace \
-  --set ui.service.type=ClusterIP \
+  --set runner.server.tokenSecret=waypoint-server-token \
+  --set ui.service.type=ClusterIP  \
   waypoint hashicorp/waypoint
 	@until kubectl -n waypoint-system get pod waypoint-server-0 >/dev/null 2>&1; do echo "waiting for server to initialize" && sleep 3; done
 	@$(KUBECTL) -n waypoint-system wait po waypoint-server-0 --for condition=Ready --timeout=300s
@@ -200,10 +202,8 @@ waypoint:
 	@$(INFO) the waypoint server login token is:
 	@$(KUBECTL) -n waypoint-system get secret waypoint-server-token -o json | jq -cr '.data | map_values(@base64d) | .token'
 	@$(OK) running locally deployed waypoint
-	@$(INFO) Please use "kubectl port-forward svc/waypoint-ui 9443:443 -n waypoint-system" in conjunction with a token to login to the system via the ui
+	@$(INFO) Please use \"kubectl port-forward svc/waypoint-ui 9443:443 -n waypoint-system\" in conjunction with a token to login to the system via the ui
 
-#   --set runner.server.tokenSecret=ui-secret \
-# @$(KUBECTL) apply -f patch/ui-secret.yaml - could try and statically patch the secret but might not be useful or stable
 e2e: local-deploy waypoint uptest
 
 .PHONY: cobertura submodules fallthrough run crds.clean
