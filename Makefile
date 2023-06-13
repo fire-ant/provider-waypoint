@@ -167,7 +167,11 @@ run: go.build
 # End to End Testing
 CROSSPLANE_NAMESPACE = upbound-system
 -include build/makelib/local.xpkg.mk
+ifeq ($(USE_DEVCON),true)
+-include patch/controlplane.mk
+else
 -include build/makelib/controlplane.mk
+endif
 
 uptest: $(UPTEST) $(KUBECTL) $(KUTTL)
 	@$(INFO) running automated tests
