@@ -10,9 +10,9 @@ import "github.com/upbound/upjet/pkg/config"
 // provider.
 var ExternalNameConfigs = map[string]config.ExternalName{
 	// Import requires using a randomly generated ID from provider: nl-2e21sda
-    "waypoint_auth_method_oidc": config.NameAsIdentifier,
-    "waypoint_project":           config.NameAsIdentifier,
-    "waypoint_runner_profile":   config.NameAsIdentifier,
+	"waypoint_auth_method_oidc": config.NameAsIdentifier,
+	"waypoint_project":          config.NameAsIdentifier,
+	"waypoint_runner_profile":   config.NameAsIdentifier,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the
